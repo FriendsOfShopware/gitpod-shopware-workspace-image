@@ -1,0 +1,40 @@
+name: Build
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_BUILDKIT: 1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php-version: 8.2
+            node-version: 20
+            tag: latest
+          - php-version: 8.2
+            node-version: 18
+            tag: php8.2-node-18
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login into Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+
+      - uses: docker/build-push-action@v4
+        with:
+          tags: friendsofshopware/gitpod-shopware-workspace:${{ matrix.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          build-args: |
+            NODE_VERSION=${{ matrix.node-version }}
+            PHP_VERSION=${{ matrix.php-version }}
