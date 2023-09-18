@@ -12,7 +12,6 @@ The Image contains the following things pre-installed and configured:
 
 ```yaml
 # .gitpod.yml
-image:
-  file: friendsofshopware/gitpod-shopware-workspace:latest
+image: friendsofshopware/gitpod-shopware-workspace:latest
 ```
 
